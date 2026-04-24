@@ -6,84 +6,270 @@
     <title>Movie Review API</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
-        input, textarea { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; }
-        button { padding: 8px 15px; margin: 5px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 3px; }
-        button:hover { background: #0056b3; }
-        .delete-btn { background: #dc3545; }
-        .delete-btn:hover { background: #c82333; }
-        .movie-item { border: 1px solid #eee; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .error { color: red; }
-        .success { color: green; }
-        hr { margin: 20px 0; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f5; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        
+        .btn-add { background: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .btn-add:hover { background: #218838; }
+        .btn-back { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        .edit-btn { background: #ffc107; color: #333; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer; margin: 5px; }
+        .delete-btn { background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer; margin: 5px; }
+        .btn-submit { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .btn-cancel { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; margin-left: 10px; }
+        
+        .movie-list { display: grid; gap: 15px; }
+        .movie-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
+        .movie-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .movie-title { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 8px; }
+        .movie-author { color: #17a2b8; margin-bottom: 8px; font-size: 14px; }
+        .movie-rating { color: #ffc107; margin-bottom: 8px; }
+        .movie-review { color: #666; font-size: 14px; }
+        .movie-actions { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        
+        .form-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .form-group textarea { min-height: 100px; }
+        
+        .detail-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .detail-movie { background: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #007bff; }
+        
+        .message { position: fixed; top: 20px; right: 20px; padding: 12px 24px; border-radius: 5px; z-index: 1000; animation: slideIn 0.3s ease; }
+        .message-success { background: #28a745; color: white; }
+        .message-error { background: #dc3545; color: white; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+        .counter { background: #007bff; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Movie Review API</h1>
-        
-        <!-- Add Movie Form -->
-        <div class="card">
-            <h2>Add New Movie</h2>
-            <input type="text" id="title" placeholder="Movie Title">
-            <textarea id="review" placeholder="Movie Review"></textarea>
-            <input type="number" id="rating" placeholder="Rating (1-10)" min="1" max="10">
-            <button onclick="addMovie()">Add Movie</button>
+        <div class="header">
+            <h1>🎬 Movie Review API</h1>
+            <p>Discover and review your favorite movies</p>
         </div>
 
-        <!-- Movies List -->
-        <div class="card">
-            <h2>Movies List</h2>
-            <div id="moviesList">Loading...</div>
+        <!-- List View -->
+        <div id="listView">
+            <button class="btn-add" onclick="showAddForm()">➕ Add New Movie</button>
+            <div id="moviesList" class="loading">Loading movies...</div>
+        </div>
+
+        <!-- Add Movie Form -->
+        <div id="addFormView" style="display: none;">
+            <button class="btn-back" onclick="showListView()">← Back to Movies</button>
+            <div class="form-container">
+                <h2>Add New Movie</h2>
+                <form id="addMovieForm">
+                    <div class="form-group">
+                        <label>Movie Title *</label>
+                        <input type="text" id="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author Name *</label>
+                        <input type="text" id="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Review</label>
+                        <textarea id="review"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating (1-10)</label>
+                        <input type="number" id="rating" min="1" max="10" step="0.1">
+                    </div>
+                    <button type="submit" class="btn-submit">✅ Add Movie</button>
+                    <button type="button" class="btn-cancel" onclick="showListView()">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div id="editFormView" style="display: none;">
+            <button class="btn-back" onclick="showListView()">← Back to Movies</button>
+            <div class="form-container">
+                <h2>Edit Movie</h2>
+                <form id="editMovieForm">
+                    <input type="hidden" id="editId">
+                    <div class="form-group">
+                        <label>Movie Title *</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author Name *</label>
+                        <input type="text" id="editAuthor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Review</label>
+                        <textarea id="editReview"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating (1-10)</label>
+                        <input type="number" id="editRating" min="1" max="10" step="0.1">
+                    </div>
+                    <button type="submit" class="btn-submit">💾 Save Changes</button>
+                    <button type="button" class="btn-cancel" onclick="showListView()">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detailView" style="display: none;">
+            <button class="btn-back" onclick="showListView()">← Back to Movies</button>
+            <div class="detail-container">
+                <div id="movieDetail"></div>
+            </div>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api/movies';
 
+        function showListView() {
+            document.getElementById('listView').style.display = 'block';
+            document.getElementById('addFormView').style.display = 'none';
+            document.getElementById('editFormView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'none';
+            loadMovies(); // Refresh the list when coming back
+        }
+
+        function showAddForm() {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('addFormView').style.display = 'block';
+            document.getElementById('editFormView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'none';
+            document.getElementById('addMovieForm').reset();
+        }
+
+        function showEditForm() {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('addFormView').style.display = 'none';
+            document.getElementById('editFormView').style.display = 'block';
+            document.getElementById('detailView').style.display = 'none';
+        }
+
+        function showDetailView() {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('addFormView').style.display = 'none';
+            document.getElementById('editFormView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+        }
+
+        // Load all movies
         async function loadMovies() {
             try {
+                console.log('Loading movies...');
                 const response = await fetch(API_BASE);
-                const movies = await response.json();
+                const result = await response.json();
+                
+                console.log('Movies loaded:', result);
                 
                 const container = document.getElementById('moviesList');
                 
-                if (!movies.success || movies.data.length === 0) {
-                    container.innerHTML = '<p>No movies found. Add one above!</p>';
-                    return;
-                }
-                
-                container.innerHTML = movies.data.map(movie => `
-                    <div class="movie-item">
-                        <div>
-                            <strong>${movie.title}</strong>
-                            ${movie.rating ? `<br>Rating: ${movie.rating}/10` : ''}
-                            ${movie.review ? `<br><small>${movie.review.substring(0, 100)}</small>` : ''}
+                if (result.success && result.data && result.data.length > 0) {
+                    // Show counter
+                    const counter = `<div class="counter">📊 Total Movies: ${result.data.length}</div>`;
+                    
+                    container.innerHTML = counter + '<div class="movie-list">' + result.data.map(movie => `
+                        <div class="movie-card" onclick="viewMovieDetail(${movie.id})">
+                            <div class="movie-title">${escapeHtml(movie.title)}</div>
+                            <div class="movie-author">✍️ By: ${escapeHtml(movie.author)}</div>
+                            ${movie.rating ? `<div class="movie-rating">⭐ ${movie.rating}/10</div>` : ''}
+                            ${movie.review ? `<div class="movie-review">📝 ${escapeHtml(movie.review.substring(0, 100))}${movie.review.length > 100 ? '...' : ''}</div>` : ''}
+                            <div class="movie-actions" onclick="event.stopPropagation()">
+                                <button class="edit-btn" onclick="showEditFormAndLoad(${movie.id})">✏️ Edit</button>
+                                <button class="delete-btn" onclick="deleteMovie(${movie.id})">🗑️ Delete</button>
+                            </div>
                         </div>
-                        <button class="delete-btn" onclick="deleteMovie(${movie.id})">Delete</button>
-                    </div>
-                `).join('');
+                    `).join('') + '</div>';
+                } else {
+                    container.innerHTML = '<div class="empty">🎬 No movies yet. Click "Add New Movie" to get started!</div>';
+                }
             } catch (error) {
-                document.getElementById('moviesList').innerHTML = '<p class="error">Error loading movies</p>';
-                console.error('Error:', error);
+                console.error('Load error:', error);
+                document.getElementById('moviesList').innerHTML = '<div class="empty">❌ Error loading movies. Make sure server is running on port 3000</div>';
             }
         }
 
-        async function addMovie() {
+        // View single movie
+        async function viewMovieDetail(id) {
+            try {
+                const response = await fetch(`${API_BASE}/${id}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const movie = result.data;
+                    const detailHTML = `
+                        <h2>📽️ Movie Details</h2>
+                        <div class="detail-movie">
+                            <h3 style="color: #007bff;">${escapeHtml(movie.title)}</h3>
+                            <p><strong>✍️ Author:</strong> ${escapeHtml(movie.author)}</p>
+                            ${movie.rating ? `<p><strong>⭐ Rating:</strong> ${movie.rating}/10</p>` : ''}
+                            ${movie.review ? `<p><strong>📝 Review:</strong></p><p>${escapeHtml(movie.review)}</p>` : ''}
+                            <p><small>📅 Added: ${movie.createdAt ? new Date(movie.createdAt).toLocaleString() : 'N/A'}</small></p>
+                            ${movie.updatedAt ? `<p><small>🔄 Updated: ${new Date(movie.updatedAt).toLocaleString()}</small></p>` : ''}
+                        </div>
+                        <button class="edit-btn" onclick="showEditFormAndLoad(${movie.id})">✏️ Edit Movie</button>
+                        <button class="delete-btn" onclick="deleteMovie(${movie.id})">🗑️ Delete Movie</button>
+                    `;
+                    
+                    document.getElementById('movieDetail').innerHTML = detailHTML;
+                    showDetailView();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (error) {
+                showMessage('Error loading movie details', 'error');
+            }
+        }
+
+        // Show edit form and load movie data
+        async function showEditFormAndLoad(id) {
+            try {
+                const response = await fetch(`${API_BASE}/${id}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const movie = result.data;
+                    
+                    document.getElementById('editId').value = movie.id;
+                    document.getElementById('editTitle').value = movie.title;
+                    document.getElementById('editAuthor').value = movie.author;
+                    document.getElementById('editReview').value = movie.review || '';
+                    document.getElementById('editRating').value = movie.rating || '';
+                    
+                    showEditForm();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (error) {
+                showMessage('Error loading movie for editing', 'error');
+            }
+        }
+
+        // Add movie
+        document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
             const title = document.getElementById('title').value.trim();
+            const author = document.getElementById('author').value.trim();
             const review = document.getElementById('review').value.trim();
             const rating = document.getElementById('rating').value;
             
-            if (!title) {
-                alert('Please enter a movie title');
+            if (!title || !author) {
+                showMessage('Please enter both movie title and author name', 'error');
                 return;
             }
             
-            const movieData = { title };
+            const movieData = { title, author };
             if (review) movieData.review = review;
-            if (rating) movieData.rating = parseInt(rating);
+            if (rating) movieData.rating = parseFloat(rating);
             
             try {
                 const response = await fetch(API_BASE, {
@@ -92,25 +278,60 @@
                     body: JSON.stringify(movieData)
                 });
                 
+                const result = await response.json();
+                
                 if (response.ok) {
-                    // Clear form
-                    document.getElementById('title').value = '';
-                    document.getElementById('review').value = '';
-                    document.getElementById('rating').value = '';
-                    
-                    // Reload movies
-                    loadMovies();
-                    alert('Movie added successfully!');
+                    showMessage('Movie added successfully!', 'success');
+                    showListView(); // Go back to list and refresh
                 } else {
-                    alert('Failed to add movie');
+                    showMessage('Error: ' + (result.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error adding movie');
+                showMessage('Network error: Could not connect to server', 'error');
             }
-        }
+        });
 
+        // Update movie
+        document.getElementById('editMovieForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('editTitle').value.trim();
+            const author = document.getElementById('editAuthor').value.trim();
+            const review = document.getElementById('editReview').value.trim();
+            const rating = document.getElementById('editRating').value;
+            
+            if (!title || !author) {
+                showMessage('Please enter both title and author', 'error');
+                return;
+            }
+            
+            const updateData = { title, author };
+            if (review) updateData.review = review;
+            if (rating) updateData.rating = parseFloat(rating);
+            
+            try {
+                const response = await fetch(`${API_BASE}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    showMessage('Movie updated successfully!', 'success');
+                    showListView();
+                } else {
+                    showMessage('Failed to update movie', 'error');
+                }
+            } catch (error) {
+                showMessage('Error updating movie', 'error');
+            }
+        });
+
+        // Delete movie
         async function deleteMovie(id) {
+            event.stopPropagation();
             if (confirm('Are you sure you want to delete this movie?')) {
                 try {
                     const response = await fetch(`${API_BASE}/${id}`, {
@@ -118,20 +339,45 @@
                     });
                     
                     if (response.ok) {
-                        loadMovies();
-                        alert('Movie deleted successfully!');
+                        showMessage('Movie deleted successfully!', 'success');
+                        showListView(); // This will refresh the list
                     } else {
-                        alert('Failed to delete movie');
+                        showMessage('Failed to delete movie', 'error');
                     }
                 } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error deleting movie');
+                    showMessage('Error deleting movie', 'error');
                 }
             }
         }
 
+        // Helper functions
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Load movies when page loads
         loadMovies();
+        
+        // Refresh every 5 seconds to show new movies (optional)
+        setInterval(() => {
+            if (document.getElementById('listView').style.display !== 'none') {
+                loadMovies();
+            }
+        }, 5000);
     </script>
 </body>
 </html>
