@@ -1,0 +1,94 @@
+
+  [
+  {
+    "id": 1,
+    "title": "Love & Basketball",
+    "director": "Gina Prince-Bythewood",
+    "year": 2000,
+    "genre": "Romance/Drama",
+    "rating": 7.2,
+    "review": "A beautiful love story wrapped in competitive basketball."
+  },
+  {
+    "id": 2,
+    "title": "Remember the Titans",
+    "director": "Boaz Yakin",
+    "year": 2000,
+    "genre": "Sports/Drama",
+    "rating": 7.8,
+    "review": "Inspiring true story of racial integration in high school football."
+  },
+  {
+    "id": 3,
+    "title": "Love Don't Cost a Thing",
+    "director": "Troy Beyer",
+    "year": 2003,
+    "genre": "Comedy/Romance",
+    "rating": 5.0,
+    "review": "A fun early 2000s teen romance remake."
+  },
+  {
+    "id": 4,
+    "title": "Ray",
+    "director": "Taylor Hackford",
+    "year": 2004,
+    "genre": "Biography/Drama",
+    "rating": 7.7,
+    "review": "Jamie Foxx delivers an Oscar-winning performance as Ray Charles."
+  },
+  {
+    "id": 5,
+    "title": "Coach Carter",
+    "director": "Thomas Carter",
+    "year": 2005,
+    "genre": "Sports/Drama",
+    "rating": 7.3,
+    "review": "Powerful story about discipline, education, and basketball."
+  },
+  {
+    "id": 6,
+    "title": "Hustle & Flow",
+    "director": "Craig Brewer",
+    "year": 2005,
+    "genre": "Drama/Music",
+    "rating": 7.4,
+    "review": "Raw and authentic look at Memphis hip-hop culture."
+  },
+  {
+    "id": 7,
+    "title": "The Pursuit of Happyness",
+    "director": "Gabriele Muccino",
+    "year": 2006,
+    "genre": "Biography/Drama",
+    "rating": 8.0,
+    "review": "Heartbreaking yet inspiring true story of perseverance."
+  },
+  {
+    "id": 8,
+    "title": "Dreamgirls",
+    "director": "Bill Condon",
+    "year": 2006,
+    "genre": "Musical/Drama",
+    "rating": 6.6,
+    "review": "Spectacular performances from Beyoncé, Jennifer Hudson, and Eddie Murphy."
+  },
+  {
+    "id": 9,
+    "title": "Cadillac Records",
+    "director": "Darnell Martin",
+    "year": 2008,
+    "genre": "Biography/Music",
+    "rating": 7.0,
+    "review": "The story of Chess Records and legendary blues musicians."
+  },
+  {
+    "id": 10,
+    "title": "Notorious",
+    "director": "George Tillman Jr.",
+    "year": 2009,
+    "genre": "Biography/Drama",
+    "rating": 6.7,
+    "review": "Honest portrayal of The Notorious B.I.G.'s rise and legacy."
+  }
+]
+

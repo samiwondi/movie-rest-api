@@ -1,0 +1,17 @@
+{
+  "name": "movie-review-api",
+  "version": "1.0.0",
+  "description": "A simple REST API for movie reviews using Node.js core modules",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "movies"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "commonjs"
+}
