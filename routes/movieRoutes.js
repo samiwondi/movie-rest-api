@@ -11,34 +11,43 @@ class MovieRoutes {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Route: GET /api/movies
-    if (path === '/api/movies' && method === 'GET') {
-      MovieController.getAll(req, res);
+    // Put this BEFORE your API routes
+if (!path.startsWith('/api') && method === 'GET') {
+  const fs = require('fs');
+  const pathToFile = require('path').join(__dirname, '../frontend.html');
+  fs.readFile(pathToFile, 'utf8', (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end('File not found');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
     }
-    // Route: GET /api/movies/:id
+  });
+}
+else if (path === '/api/movies' && method === 'GET') {
+  MovieController.getAll(req, res);
+}
+    
     else if (path.match(/^\/api\/movies\/(\d+)$/) && method === 'GET') {
       const id = path.split('/')[3];
       MovieController.getById(req, res, id);
     }
-    // Route: POST /api/movies
     else if (path === '/api/movies' && method === 'POST') {
       MovieRoutes.getBody(req, (body) => {
         MovieController.create(req, res, body);
       });
     }
-    // Route: PUT /api/movies/:id
     else if (path.match(/^\/api\/movies\/(\d+)$/) && method === 'PUT') {
       const id = path.split('/')[3];
       MovieRoutes.getBody(req, (body) => {
         MovieController.update(req, res, id, body);
       });
     }
-    // Route: DELETE /api/movies/:id
     else if (path.match(/^\/api\/movies\/(\d+)$/) && method === 'DELETE') {
       const id = path.split('/')[3];
-MovieController.delete(req, res, id);
+      MovieController.delete(req, res, id);
     }
-    // Home route
     else if (path === '/' && method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(`
@@ -46,7 +55,7 @@ MovieController.delete(req, res, id);
         <p>Welcome to the Movie Review API</p>
         <h2>Available Endpoints:</h2>
         <ul>
-          <li>Get all movies</li>
+          <li><a href="/api/movies">Get all movies</a></li>
           <li>Get a single movie</li>
           <li>Create a new movie</li>
           <li>Update a movie</li>
@@ -54,7 +63,19 @@ MovieController.delete(req, res, id);
         </ul>
       `);
     }
-    // 404 - Route not found
+    else if (path === '/frontend' && method === 'GET') {
+      const fs = require('fs');
+      const pathToFile = require('path').join(__dirname, '../frontend.html');
+      fs.readFile(pathToFile, 'utf8', (err, data) => {
+        if (err) {
+          res.writeHead(404);
+          res.end('File not found');
+        } else {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(data);
+        }
+      });
+    }
     else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
